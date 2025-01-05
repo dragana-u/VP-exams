@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method EmployeeController.showNews -->
+    <form id="filter-form" th:action="@{/}" METHOD="GET">
+        <label for="f1">YearsOfService</label>
+        <input name="yearsOfService" id="f1" type="number"/>
+        <label for="f2">Skill</label>
+        <select name="skillId" id="f2">
+            <option value="">All</option>
+            <!-- For each skill you should have one <option> like below  -->
+            <option th:each="sk : ${skills}"
+                    th:value="${sk.getId()}"
+                    th:text="${sk.getName()}"
+                    th:selected="${skillId != null && skillId == sk.getId()}">
+            </option>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- EmployeeController.showAdd (Only ADMIN can see this element)-->
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/add" class="add-item">
+                Add
+            </a>
+        </th:block>
+    </div>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Type</th>
+            <th>Skills</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each employees you should have one <tr> like below -->
+        <tr th:each="em : ${employees}" class="item">
+            <td th:text="${em.getName()}"></td>
+            <td th:text="${em.getEmail()}"></td>
+            <td th:text="${em.getType()}">[employees.type]</td>
+            <td>
+                <!-- For each of the employee.skills show the following element-->
+                <span th:each="skill : ${em.getSkills()}" th:text="${skill.getName()}" class="item-rel"></span>
+            </td>
+            <td>
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <!-- EmployeeController.delete (Only ADMIN can see this element)-->
+                    <form th:action="@{'/{id}/delete' (id=${em.getId()})}"
+                          th:method="POST">
+                        <button type="submit" class="delete-item">Delete</button>
+                    </form>
+                    <!-- EmployeeController.showEdit (Only ADMIN can see this element)-->
+                    <a th:href="@{'/{id}/edit' (id=${em.getId()})}" class="edit-item">Edit</a>
+                </th:block>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
