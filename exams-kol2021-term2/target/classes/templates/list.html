@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>WP Exam</title>
+</head>
+<body>
+
+<div>
+    <!-- The form below should invoke the method MenuController.showMenus -->
+    <form id="filter-form">
+
+        <label for="nameSearch">Restaurant Name</label>
+        <input id="nameSearch" type="text" name="nameSearch"/>
+        <select id="menuType" name="menuType">
+            <option value="">All</option>
+            <!-- For each menu type you should have one <option> like below  -->
+<!--            <option value="[menuType]"> [menuType]</option>-->
+            <option th:each="mi : ${menuTypes}"
+                    th:value="${mi}"
+                    th:text="${mi}"
+                    th:selected="${mi != null && menuType == mi.name()}">
+            </option>
+        </select>
+        <button id="filter" type="submit">Filter</button>
+    </form>
+    <div>
+        <!-- MenuController.showAdd -->
+        <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/add" class="add-item">
+            Add new menu
+        </a>
+        </th:block>
+    </div>
+    <table>
+        <tr>
+            <th>Restaurant name</th>
+            <th>Menu Type</th>
+            <th>Menu Items</th>
+            <th>Creator</th>
+            <th>Actions</th>
+        </tr>
+        <!-- For each menu you should have one <tr> like below -->
+        <tr th:each="m : ${menu}" class="item">
+            <td th:text="${m.restaurantName}"></td>
+            <td th:text="${m.getMenuType() != null}
+                            ? ${m.getMenuType().name()} : 'No Type'"></td>
+            <td>
+                <ul th:each="mi : ${menuItems}">
+                    <!-- For each menu's item you should display one <li> element like the one below -->
+                    <li th:text="${mi.getName()}"></li>
+                </ul>
+            </td>
+<!--            <td>[menu.creator]</td>-->
+            <td>
+                <!-- MenuController.delete -->
+                <th:block sec:authorize="hasRole('ROLE_ADMIN')">
+                <form th:action="@{'/{id}/delete' (id=${m.getId()})}"
+                      th:method="POST">
+                    <button type="submit" class="delete-item">Delete</button>
+                </form>
+                <!-- MenuController.showEdit -->
+                <a th:href="@{'/{id}/edit' (id=${(m.getId())})}" class="edit-item">Edit</a>
+                </th:block>
+            </td>
+        </tr>
+    </table>
+
+</div>
+<div>
+    <ul id="nav">
+        <li><a href="/">Home</a></li>
+        <li><a href="/login">Login</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+</div>
+</body>
+</html>
